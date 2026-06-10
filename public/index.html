@@ -10,6 +10,9 @@
 
   <header class="border-b border-zinc-900 px-6 lg:px-12 py-4 flex justify-between items-center bg-zinc-950/80 backdrop-blur fixed top-0 w-full z-50">
     <div class="flex items-center space-x-2">
+      <button onclick="toggleMobileMenu()" class="lg:hidden text-zinc-400 hover:text-zinc-100 mr-2 font-mono focus:outline-none text-xl">
+        ☰
+      </button>
       <span class="text-cyan-400 font-mono font-black text-xl tracking-tight">⚙️ WiseGenus</span>
       <span class="text-[10px] bg-zinc-900 border border-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded font-mono uppercase tracking-wider">Engine v0.1.0</span>
     </div>
@@ -39,7 +42,7 @@
 
     <section id="playground" class="max-w-6xl mx-auto px-6 pb-24 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
       
-      <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-2xl flex flex-col justify-between">
+      <div id="left-menu" class="hidden lg:flex bg-zinc-900 border border-zinc-800 rounded-xl p-6 shadow-2xl flex-col justify-between">
         <div class="space-y-4">
           <div class="flex justify-between items-center">
             <h3 class="text-sm font-semibold text-zinc-300 font-mono">1. Unstructured AI Hallucination Stream</h3>
@@ -74,16 +77,25 @@
     <p>WiseGenus Core Engine • MIT Licensed Open Source Initiative • © 2026 wisegenus.com</p>
   </footer>
 
-  <!-- 1. HERE IS WHERE WE LOAD THE SUPABASE LIBRARY FROM THE INTERNET -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    // 2. HERE IS WHERE WE LINK YOUR PERSONAL VALUES FROM YOUR NOTEPAD
     const SUPABASE_URL = 'https://oimtizf9gzdgtabuhsik.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_pub_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9b2RsdG16ZjlnemRndGFidWhzaWswTXR0WlA5RVpHeU1FTTcwZ21kZXRhdWx0X3B1Ymxpc2hhYmxlX0xleDFYVVI5T0ZkR2FtUWRVVzF3X3cwQU0I'; 
     
-    // This line initializes the plugin using your keys
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 📱 INTERACTIVE CODE: Controls showing or hiding the mobile view menu
+    function toggleMobileMenu() {
+      const menu = document.getElementById('left-menu');
+      if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+        menu.classList.add('block');
+      } else {
+        menu.classList.remove('block');
+        menu.classList.add('hidden');
+      }
+    }
 
     async function runGroundingEngine() {
       const outputFrame = document.getElementById('json-output');
@@ -106,10 +118,8 @@
         }
       };
 
-      // Display the JSON nicely on the screen
       outputFrame.textContent = JSON.stringify(mockVerifiedJSON, null, 2);
 
-      // 3. NEW DATABASE CODE: Save the verification event into Supabase
       const { data, error } = await supabase
         .from('grounding_schemas')
         .insert([
