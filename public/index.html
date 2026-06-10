@@ -74,13 +74,22 @@
     <p>WiseGenus Core Engine • MIT Licensed Open Source Initiative • © 2026 wisegenus.com</p>
   </footer>
 
+  <!-- 1. HERE IS WHERE WE LOAD THE SUPABASE LIBRARY FROM THE INTERNET -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
-    function runGroundingEngine() {
+    // 2. HERE IS WHERE WE LINK YOUR PERSONAL VALUES FROM YOUR NOTEPAD
+    const SUPABASE_URL = 'https://oimtizf9gzdgtabuhsik.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_pub_eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9b2RsdG16ZjlnemRndGFidWhzaWswTXR0WlA5RVpHeU1FTTcwZ21kZXRhdWx0X3B1Ymxpc2hhYmxlX0xleDFYVVI5T0ZkR2FtUWRVVzF3X3cwQU0I'; 
+    
+    // This line initializes the plugin using your keys
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function runGroundingEngine() {
       const outputFrame = document.getElementById('json-output');
       outputFrame.classList.remove('text-zinc-500');
       outputFrame.classList.add('text-emerald-400');
       
-      // Strict deterministic evaluation payload
       const mockVerifiedJSON = {
         "transaction_metadata": {
           "timestamp": "2026-06-09T20:29:51Z",
@@ -97,7 +106,24 @@
         }
       };
 
+      // Display the JSON nicely on the screen
       outputFrame.textContent = JSON.stringify(mockVerifiedJSON, null, 2);
+
+      // 3. NEW DATABASE CODE: Save the verification event into Supabase
+      const { data, error } = await supabase
+        .from('grounding_schemas')
+        .insert([
+          { 
+            schema_name: 'Sandbox Live Execution', 
+            schema_json: mockVerifiedJSON 
+          }
+        ]);
+
+      if (error) {
+        console.error('Database save error:', error.message);
+      } else {
+        console.log('Successfully saved data entry to Supabase PostgreSQL table!');
+      }
     }
   </script>
 </body>
